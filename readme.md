@@ -27,3 +27,8 @@ torch
 ## Dataset
 
 Our model use the schibinger dataset. This dataset is embryo sequencing profiles. We can use `scipy` to read the dataset. Sample already prepared to read it. For other dataset, some already contained in the scanpy.
+
+
+## Structure model
+
+I'm building a VAE. also we will test other VAE's performance.
