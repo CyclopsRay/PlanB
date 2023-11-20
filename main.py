@@ -15,38 +15,38 @@ ttp_p = 11
 gene_cap = 2000
 cell_cap = 2000
 dense_mat_list, _ = load_data(base_dir, study, ttp, gene_cap, cell_cap)
-print(dense_mat_list.len())
+print(len(dense_mat_list))
 
 
 
-# Convert the numpy array to a PyTorch tensor
+# Convert tensor
 input_tensor = torch.tensor(np.concatenate(dense_mat_list), dtype=torch.float32)
 
-# Shuffle the data at the cell level
+# Shuffle 
 input_tensor = input_tensor[torch.randperm(input_tensor.size()[0])]
 
-# Split the dataset into training, validation, and test sets (e.g., 70%, 15%, 15% split)
+# Split
 train_size = int(0.7 * len(input_tensor))
 valid_size = int(0.15 * len(input_tensor))
 test_size = len(input_tensor) - train_size - valid_size
 train_dataset, valid_dataset, test_dataset = random_split(input_tensor, [train_size, valid_size, test_size])
 
-# Create DataLoaders for each set
+# Create DataLoaders
 batch_size = 32
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
-# Initialize the model
-[cell_num, truncate_timepint, gene_num] = input_tensor.size()
+# Initialization
+[cell_num, gene_num] = input_tensor.size()
 
 ae = AE(cell_num=cell_num, gene_num=gene_num, latent_space=64)
 
-# Loss function and optimizer
+# Recon
 criterion = nn.MSELoss()
 optimizer = optim.Adam(ae.parameters(), lr=0.001)
 
-# Function to train the model
+# Train
 def train(model, data_loader, optimizer, criterion, epochs=10):
     model.train()
     for epoch in range(epochs):
@@ -61,7 +61,7 @@ def train(model, data_loader, optimizer, criterion, epochs=10):
             running_loss += loss.item()
         print(f'Epoch {epoch + 1}, Loss: {running_loss / len(data_loader)}')
 
-# Function to evaluate the model
+# Eval
 def evaluate(model, data_loader, criterion):
     model.eval()
     total_loss = 0.0
@@ -73,9 +73,11 @@ def evaluate(model, data_loader, criterion):
             total_loss += loss.item()
     return total_loss / len(data_loader)
 
-# Training the model
+# Train
 train(ae, train_loader, optimizer, criterion, epochs=10)
 
+latent = ae.latent(input_tensor)
+print(f"Latent representation: {latent.size()}")
 # Evaluating the model
 valid_loss = evaluate(ae, valid_loader, criterion)
 test_loss = evaluate(ae, test_loader, criterion)

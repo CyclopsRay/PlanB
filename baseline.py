@@ -30,3 +30,7 @@ class AE(nn.Module):
         x = self.encoder(x)
         x = self.decoder(x)
         return x
+    
+    def latent(self, x):
+        x = self.encoder(x)
+        return x
