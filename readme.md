@@ -32,3 +32,5 @@ Our model use the schibinger dataset. This dataset is embryo sequencing profiles
 ## Structure model
 
 I'm building a VAE. also we will test other VAE's performance.
+
+scVAE, ZINVWAVE
