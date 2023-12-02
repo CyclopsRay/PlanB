@@ -9,7 +9,8 @@ import os
 
 
 base_dir = os.getcwd()
-study = 'dataset'
+study = 'schiebinger2019'
+# study = 'cao2019'
 ttp = 12
 ttp_p = 11
 gene_cap = 2000
