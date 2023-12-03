@@ -35,7 +35,7 @@ def load_data(base_dir, study, truncate_time_point = 12, gene_num_cap = 4000, ce
             str_time_pt = str(time_pt).replace('.', '_')
         
             fname = os.path.join(base_dir, study, 'gene_exp_mat_time_' + \
-                             str_time_pt + '_' + subsample_str + '_sf_1e04_rc.mtx') #'_g1000.mtx')
+                             str_time_pt + '_10k' +  + '_sf_1e04_rc.mtx') #'_g1000.mtx')
         
             sparse_mat = scipy.io.mmread(fname) #coo format
             sparse_mat = coo_matrix.transpose(sparse_mat) #rows now correspond to samples
@@ -53,39 +53,40 @@ def load_data(base_dir, study, truncate_time_point = 12, gene_num_cap = 4000, ce
     print('Minimum number of cells over all time points:', min_num_cells, '\n')
         
     num_tps_total = len(dense_mat_list)
-    print("Num total: " + str{num_tps_total})
+    print("Num total: " + str(num_tps_total))
     # Before they have different size. Now unify them, and make them like (cell, time, gene) for further use.
     # Threshold or dca?
 
-    # print("Number sample")
-    # new_dense_mat_list = []
-    # old_dense_mat_list = dense_mat_list
-    # for t in np.arange(len(time_pt_list)):
-    #     dense_mat = dense_mat_list[t]
-    #     cells_per_tp = np.shape(dense_mat)[0]
-    #     if cells_per_tp < cell_num_cap:
-    #         idcs = np.random.choice(cells_per_tp, size=min_num_cells, replace=True) # Add some points i.i.d.
-    #     else:
-    #         idcs = np.random.choice(cells_per_tp, size=min_num_cells, replace=False)
-    #     dense_mat = dense_mat[idcs, :]
-    #     new_dense_mat_list.append(dense_mat)
-    # dense_mat_list = new_dense_mat_list       
-    # for t in range(truncate_time_point+1):
-    #         print(dense_mat_list[t].shape)
+    print("Number sample")
+    new_dense_mat_list = []
+    old_dense_mat_list = dense_mat_list
+    for t in np.arange(len(time_pt_list)):
+        dense_mat = dense_mat_list[t]
+        cells_per_tp = np.shape(dense_mat)[0]
+        if cells_per_tp < cell_num_cap:
+            idcs = np.random.choice(cells_per_tp, size=min_num_cells, replace=True) # Add some points i.i.d.
+        else:
+            idcs = np.random.choice(cells_per_tp, size=min_num_cells, replace=False)
+        dense_mat = dense_mat[idcs, :]
+        new_dense_mat_list.append(dense_mat)
+    dense_mat_list = new_dense_mat_list       
+    for t in range(truncate_time_point+1):
+            print(dense_mat_list[t].shape)
+            
+    return dense_mat_list, dense_mat_list
+    # One hot embedding:-----------]
 
-    # # One hot embedding:-----------]
-
-    # one_hot_mat_all_tps_list = []
+    one_hot_mat_all_tps_list = []
     
-    # for t in torch.arange(len(dense_mat_list)):
-    #     categorical_tp = t*torch.ones((cell_num_cap))
-    #     categorical_tp = categorical_tp.type(torch.long)
-    #     one_hot_tp = torch.nn.functional.one_hot(categorical_tp, num_classes= len(dense_mat_list))
-    #     one_hot_mat_all_tps_list.append(one_hot_tp.numpy())
+    for t in torch.arange(len(dense_mat_list)):
+        categorical_tp = t*torch.ones((cell_num_cap))
+        categorical_tp = categorical_tp.type(torch.long)
+        one_hot_tp = torch.nn.functional.one_hot(categorical_tp, num_classes= len(dense_mat_list))
+        one_hot_mat_all_tps_list.append(one_hot_tp.numpy())
     
-    # one_hot_mat_all_tps = np.concatenate(one_hot_mat_all_tps_list, axis=0)
+    one_hot_mat_all_tps = np.concatenate(one_hot_mat_all_tps_list, axis=0)
 
-    # return dense_mat_list, one_hot_mat_all_tps
+    return dense_mat_list, one_hot_mat_all_tps
     # cell * t * gene
     # cell * t * latent_space
     # Threshold??

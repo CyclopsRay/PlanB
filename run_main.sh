@@ -6,7 +6,7 @@
 # Specify an output file
 #SBATCH -o Run_main-%J.out
 #SBATCH -e Run_main-%J.err
-##SBATCH -p gpu --gres=gpu:1
+#SBATCH -p gpu --gres=gpu:1
 
 module load cuda/11.3.1
 module load cudnn/8.2.0

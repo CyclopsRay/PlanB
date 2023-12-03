@@ -32,6 +32,7 @@ valid_size = int(0.15 * len(input_tensor))
 test_size = len(input_tensor) - train_size - valid_size
 train_dataset, valid_dataset, test_dataset = random_split(input_tensor, [train_size, valid_size, test_size])
 
+print(f"Dataset preprocessed.")
 # Create DataLoaders
 batch_size = 32
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -40,9 +41,11 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
 # Initialization
 [cell_num, gene_num] = input_tensor.size()
-
-ae = AE(cell_num=cell_num, gene_num=gene_num, latent_space=64)
-
+print(f"Cell and gene: {cell_num}, {gene_num}")
+print(f"Cuda? {torch.cuda.is_available()}")
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+ae = AE(64, 30, 50).to(device)          #Testing.
+print(f"AE initialized.")
 # Recon
 criterion = nn.MSELoss()
 optimizer = optim.Adam(ae.parameters(), lr=0.001)
@@ -75,7 +78,9 @@ def evaluate(model, data_loader, criterion):
     return total_loss / len(data_loader)
 
 # Train
+print("Start training.")
 train(ae, train_loader, optimizer, criterion, epochs=10)
+print("Training completed.")
 
 latent = ae.latent(input_tensor)
 print(f"Latent representation: {latent.size()}")
