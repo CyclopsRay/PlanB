@@ -16,6 +16,7 @@ ttp_p = 11
 gene_cap = 2000
 cell_cap = 2000
 dense_mat_list, _ = load_data(base_dir, study, ttp, gene_cap, cell_cap)
+latent_size = 128
 print(len(dense_mat_list))
 
 
@@ -44,7 +45,7 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 print(f"Cell and gene: {cell_num}, {gene_num}")
 print(f"Cuda? {torch.cuda.is_available()}")
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-ae = AE(64, 30, 50).to(device)          #Testing.
+ae = AE(gene_num, latent_size).to(device)          #Testing.
 print(f"AE initialized.")
 # Recon
 criterion = nn.MSELoss()
@@ -82,10 +83,11 @@ print("Start training.")
 train(ae, train_loader, optimizer, criterion, epochs=10)
 print("Training completed.")
 
-latent = ae.latent(input_tensor)
+latent = ae.latent(gene_num, input_tensor)
 print(f"Latent representation: {latent.size()}")
 # Evaluating the model
 valid_loss = evaluate(ae, valid_loader, criterion)
 test_loss = evaluate(ae, test_loader, criterion)
-print(f'Validation Loss: {valid_loss}, Test Loss: {test_loss}')
 
+print(f'Validation Loss: {valid_loss}, Test Loss: {test_loss}')
+torch.save(ae.state_dict(), "Output_baseline.pt")
