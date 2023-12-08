@@ -6,10 +6,11 @@ from torch.utils.data import DataLoader, TensorDataset, random_split
 from torch import nn
 import numpy as np
 import os
+import pandas as pd
 
 
 base_dir = os.getcwd()
-study = 'schiebinger2019'
+study = 'schiebinger2019/raw_data_log'
 # study = 'cao2019'
 ttp = 12
 ttp_p = 11
@@ -19,6 +20,21 @@ dense_mat_list, _ = load_data(base_dir, study, ttp, gene_cap, cell_cap)
 latent_size = 128
 print(len(dense_mat_list))
 
+
+for i in range(len(dense_mat_list)):
+    # Extract the (c,g) matrix for the i-th t
+    matrix = dense_mat_list[i]
+    
+    # Convert the numpy array to a pandas DataFrame
+    df = pd.DataFrame(matrix)
+    
+    # Construct the file name
+    file_name = f'schiebinger2019/raw_data_origin/raw_data/original_{i+1}.tsv.gz'
+    
+    # Save the DataFrame to a compressed TSV file
+    df.to_csv(file_name, sep='\t', index=False, compression='gzip')
+
+exit()
 
 
 # Convert tensor

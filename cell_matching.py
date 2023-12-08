@@ -7,14 +7,15 @@ import torch
 from geomloss import SamplesLoss
 
 blur = 0.05
-scaling = 0.5
-latent_size = 100
+scaling = 0.3
+latent_size = 1478
 p = 2
 
 
 # load data
-folder_path = './schiebinger2019/large_test'
-file_names = [f for f in os.listdir(folder_path) if (f.startswith('test_large_latent') and f.endswith('.tsv.gz'))]
+folder_path = './schiebinger2019/raw_data_origin/raw_data'
+# output_path = 
+file_names = [f for f in os.listdir(folder_path) if (f.startswith('original') and f.endswith('.tsv.gz'))]
 
 # List to store numpy arrays
 mat = []
@@ -30,6 +31,7 @@ print(mat[0].shape)
 # exit()
 # for loop
 for i in range(len(mat)-1):
+    print(i)
     rc = np.array(mat[i],dtype=float)
     rc = torch.tensor(rc)
     rc_p = np.array(mat[i+1],dtype=float)
@@ -71,7 +73,7 @@ for i in range(len(mat)):
     df = pd.DataFrame(matrix)
     
     # Construct the file name
-    file_name = f'schiebinger2019/large_test/matched/test_matched_latent_{i+1}.tsv.gz'
+    file_name = f'schiebinger2019/raw_data_origin/matched_raw_data/matched_original_{i+1}.tsv.gz'
     
     # Save the DataFrame to a compressed TSV file
     df.to_csv(file_name, sep='\t', index=False, compression='gzip')
