@@ -34,11 +34,7 @@ test_size = len(input_tensor) - train_size - valid_size
 train_dataset, valid_dataset, test_dataset = random_split(input_tensor, [train_size, valid_size, test_size])
 
 print(f"Dataset preprocessed.")
-# Create DataLoaders
-batch_size = 32
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
+
 
 # Initialization
 [cell_num, gene_num] = input_tensor.size()
@@ -50,6 +46,12 @@ print(f"AE initialized.")
 # Recon
 criterion = nn.MSELoss()
 optimizer = optim.Adam(ae.parameters(), lr=0.001)
+
+# Create DataLoaders
+batch_size = 32
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True).to(device)
+valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True).to(device)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True).to(device)
 
 # Train
 def train(model, data_loader, optimizer, criterion, epochs=10):
