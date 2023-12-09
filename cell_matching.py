@@ -8,21 +8,21 @@ from geomloss import SamplesLoss
 
 blur = 0.05
 scaling = 0.3
-latent_size = 1478
+latent_size = 100
 p = 2
 
 
 # load data
-folder_path = './schiebinger2019/raw_data_origin/raw_data'
-# output_path = 
-file_names = [f for f in os.listdir(folder_path) if (f.startswith('original') and f.endswith('.tsv.gz'))]
+input_path = './schiebinger2019/large_test/scvae-latent-batch'
+output_path = './schiebinger2019/large_test/matched_scvae-latent-batch'
+file_names = [f for f in os.listdir(input_path) if (f.startswith('test') and f.endswith('.tsv.gz'))]
 
 # List to store numpy arrays
 mat = []
 
 # Read each file and store it as a numpy array in the list
 for file in file_names:
-    file_path = os.path.join(folder_path, file)
+    file_path = os.path.join(input_path, file)
     df = pd.read_csv(file_path, sep='\t', compression='gzip')
     array = df.values
     mat.append(array[:,1:])
@@ -30,6 +30,11 @@ for file in file_names:
 print(mat[0].shape)
 # exit()
 # for loop
+
+df = pd.DataFrame(mat[0])
+output_filename = f'{output_path}/1.tsv.gz'
+df.to_csv(output_filename, sep='\t', index=False, compression = 'gzip')
+
 for i in range(len(mat)-1):
     print(i)
     rc = np.array(mat[i],dtype=float)
@@ -58,22 +63,25 @@ for i in range(len(mat)-1):
 
     # use lapjv to find the best alignment
 
-    _, matching, _ = lapjv(coupling_mat)
+    _, _, matching = lapjv(coupling_mat)
     print(f"Now time is {i} and matching is \n {matching}")
     # shuffle the last matrix
     mat[i+1] = rc_p[matching]
+    df = pd.DataFrame(mat[i+1])
+    output_filename = f'{output_path}/{i+2}.tsv.gz'
+    df.to_csv(output_filename, sep='\t', index=False, compression = 'gzip')
 
 # save the mats
 
-for i in range(len(mat)):
-    # Extract the (c,g) matrix for the i-th t
-    matrix = mat[i]
+# for i in range(len(mat)):
+#     # Extract the (c,g) matrix for the i-th t
+#     matrix = mat[i]
     
-    # Convert the numpy array to a pandas DataFrame
-    df = pd.DataFrame(matrix)
+#     # Convert the numpy array to a pandas DataFrame
+#     df = pd.DataFrame(matrix)
     
-    # Construct the file name
-    file_name = f'schiebinger2019/raw_data_origin/matched_raw_data/matched_original_{i+1}.tsv.gz'
+#     # Construct the file name
+#     file_name = f'schiebinger2019/raw_data_origin/matched_raw_data/matched_original_{i+1}.tsv.gz'
     
-    # Save the DataFrame to a compressed TSV file
-    df.to_csv(file_name, sep='\t', index=False, compression='gzip')
+#     # Save the DataFrame to a compressed TSV file
+#     df.to_csv(file_name, sep='\t', index=False, compression='gzip')
