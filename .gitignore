@@ -1,2 +1,6 @@
 *.out
 *.err
+decompress.sh
+*.tsv
+zinb.R
+zinb.sh
