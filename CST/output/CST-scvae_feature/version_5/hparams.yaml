@@ -1,0 +1,101 @@
+cfg:
+  attention_type: quad
+  dim: 32
+  dim_ff: 3072
+  fast_attention: false
+  frame_size:
+    cols: 1
+    rows: 100
+  max_len: 16
+  model_type: linear_encoder
+  n_heads: 4
+  n_layers: 4
+  n_segments: 1
+  num_landmarks: 10
+  operation_with_pos_encoding: sum
+  p_drop_attn: 0.8
+  p_drop_hidden: 0.1
+  patch_size: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - !!python/name:numpy.ndarray ''
+    - !!python/tuple
+      - 0
+    - !!binary |
+      Yg==
+    state: !!python/tuple
+    - 1
+    - !!python/tuple
+      - 2
+    - &id001 !!python/object/apply:numpy.dtype
+      args:
+      - i8
+      - false
+      - true
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - false
+    - !!binary |
+      ZAAAAAAAAAABAAAAAAAAAA==
+  penalty_orthogonality: 1
+  plot_att_weights: false
+  plot_every_epochs: 10
+  plot_predictions: true
+  plot_training_curves: false
+  range_imshow: null
+  scale_gauss: null
+  use_softmax: true
+  vocab_size: 16
+my_loss: !!python/object:continuous_transformer.sobolev_loss.sobolev_loss
+  bs: 2
+  data_length: 20
+  diff_mode: central
+  dim: 100
+  factor: 0.01
+  frobenius: false
+  k: 3
+  minimize: true
+  p: 3
+  use_mean: false
+  use_mse: true
+n_labels: 1
+patch_sampling_cfg:
+  batch_size_segments: 2
+  in_between_frame_init: interpolation
+  interpolation_kind: linear
+  masking_type: random_masking
+  mode: ''
+  n_frames_to_hide: 16
+  num_frames: 16
+  num_in_between_frames: 500
+  num_patches: 6
+  num_patches_to_hide: !!python/object/apply:numpy.core.multiarray.scalar
+  - *id001
+  - !!binary |
+    AQAAAAAAAAA=
+  prob_replace_masked_token: 1.0
+  sampling_type: random
+  structure: grid
+path_to_save_models: ./output/CST-scvae_feature/version_5
+train_cfg:
+  compute_loss_on_dummy_points: true
+  compute_loss_whole_curve: false
+  derivtive_order_k: 3
+  experiment_name: scvae_feature
+  factor_sobolev: 0.01
+  learning_rate: 0.001
+  norm_power_p: 3
+  segment_size: '16'
+  std_noise_t: 0.0
+  std_to_data: 0.1
+  use_mean_sobolev: false
+  use_mse: true
+  weight_decay: 1.0e-07
+  weight_loss_on_real: 0.5
+warmup: 0
