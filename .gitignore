@@ -5,3 +5,4 @@ decompress.sh
 zinb.R
 zinb.sh
 *.ckpt
+inference.npz
