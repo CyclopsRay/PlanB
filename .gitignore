@@ -4,3 +4,4 @@ decompress.sh
 *.tsv
 zinb.R
 zinb.sh
+*.ckpt
