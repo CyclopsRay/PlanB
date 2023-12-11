@@ -1,0 +1,3 @@
+version     noise       CST         loss weight
+1           √           √           0.01
+2           √                       0.01

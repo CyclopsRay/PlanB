@@ -16,6 +16,7 @@ class sobolev_loss:
                  use_mse=True,use_mean=False,
                  frobenius=False):
         self.k=k
+        print('k=', k)
         self.p=p
         self.dim=dim
         self.bs=bs
@@ -47,6 +48,7 @@ class sobolev_loss:
         if get_derivatives is True:
             loss_derivatives = []
 
+        # print(self.k)
         for q in range(1,self.k+1):
             if q == 1:
                 djydxj = torch.Tensor([]).to(y)
@@ -68,7 +70,7 @@ class sobolev_loss:
             # print(x.device)
             djydxj = torch.cat([djydxj,dydxi[0].unsqueeze(-1)],-1)
             
-        
+            # print(self.minimize)
             if self.minimize is True:
 
                 if indexes is None:
@@ -89,6 +91,7 @@ class sobolev_loss:
                         loss_q = self.factor*torch.norm(djydxj[:,indexes,...,-1],\
                                                         p='fro',dim=[-2,-1]).mean()
                 loss += loss_q
+                # print(loss_q.detach().cpu().item())
                 if get_derivatives is True:
                     loss_derivatives.append(loss_q)
                     

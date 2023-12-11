@@ -671,7 +671,7 @@ class BERT_Model(pl.LightningModule):
             weight_loss_on_real = self.hparams.train_cfg["weight_loss_on_real"]
         plot_att_weights = self.hparams.cfg["plot_att_weights"]
         std_noise_t = self.hparams.train_cfg["std_noise_t"]
-        plotting = self.hparams.cfg["plotting"]
+        # plotting = self.hparams.cfg["plotting"]
         epochs_plot = self.hparams.cfg["plot_every_epochs"]
         inference=False
         

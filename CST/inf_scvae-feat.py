@@ -251,13 +251,15 @@ model = BERT_Model(model_cfg,
 if 'resume_from_checkpoint' in train_cfg:
     print('Loading BERT checkpoint model {}'.format(train_cfg['resume_from_checkpoint']))
     try: 
-        list_of_checkpoints = glob.glob(os.path.join(str_log_dir,str_model,train_cfg['resume_from_checkpoint'],'*.ckpt')) # * means all if need specific format then *.csv
-        latest_checkpoint = max(list_of_checkpoints, key=os.path.getctime)
+        list_of_checkpoints = glob.glob(os.path.join(str_log_dir,str_model,train_cfg['resume_from_checkpoint'],'CST*.ckpt')) # * means all if need specific format then *.csv
+        latest_checkpoint = max(list_of_checkpoints, key=lambda x: int(x.split('=')[-3].split('-')[0]))
         print('Loading ', latest_checkpoint)
         model = BERT_Model.load_from_checkpoint(latest_checkpoint)
     except:
         print('Loading failed')
-    
+
+model.sobolev_loss_ = loss_func
+
 # with open(f"{logger.log_dir}/readme.txt", "w+") as txt:
 #     print(readme, file=txt)
 model = model.to(device)
@@ -271,7 +273,7 @@ np.savez(os.path.join(path_to_save_models, 'inference.npz'),
     gt_T=res['gt_T'],
     gt=res['gt']
     )
-with open(os.path.join(path_to_save_models, 'inference.json'), 'w') as f:
+with open(os.path.join(path_to_save_models, f'inference_sob{train_cfg["factor_sobolev"]}.json'), 'w') as f:
     f.write(json.dumps({
         'loss': res['loss']
     }, indent=4))
