@@ -43,7 +43,7 @@ def vn_eig_entropy(rho):
 
 
 def patch_sampling(data, T_orig, patch_sampling_cfg, frame_size, patch_size, current_epoch=None, T_fixed=None):
-    sampling_type = patch_sampling_cfg["structure"]
+    # sampling_type = patch_sampling_cfg["structure"]
     
     T, P_row, P_col = sampling_full_frames(data, T_orig, patch_sampling_cfg, frame_size, patch_size, T_fixed)
     
@@ -72,8 +72,16 @@ def sampling_full_frames(data, T, patch_sampling_cfg, frame_size, patch_size, T_
             else: # In this case, T_fixed already has some coordinates that we will include, so just sample the difference
                 in_between_frames,_ = torch.sort(torch.FloatTensor(num_in_between_frames-T_fixed.size(0)).uniform_(T[0], T[-1]))
                 T_tmp,_ = torch.sort(torch.cat((T,T_fixed,in_between_frames))) # append the in-between and sort
-
-
+        elif sampling_type == 'uniform':
+            # print('here')
+            T_tmp = [T]
+            T_ = T.tolist()
+            for l, r in zip(T_[:-1], T_[1:]):
+                L = r - l
+                in_between_frames = torch.arange(1, num_in_between_frames + 1).float() / (num_in_between_frames + 1)
+                in_between_frames = in_between_frames * L + l
+                T_tmp.append(in_between_frames)
+            T_tmp,_ = torch.sort(torch.cat(T_tmp)) # append the in-between and sort
         else: 
             # just get the original coordinates of the data
             T_tmp = torch.linspace(T[0], T[-1], steps=160) # just get the original coordinates of the data

@@ -60,7 +60,7 @@ args.device = device
 
 args.num_dim_plot = 20
 args.lr_scheduler = None
-args.experiment_name = 'hungarian-scvae-latent-batch' #'Data_RandProj_20pcs_150frames', Data_20pcs_150frames
+args.experiment_name = 'matched_scvae-latent-batch' #'Data_RandProj_20pcs_150frames', Data_20pcs_150frames
 args.data_dim = 'orig' #'Data_2D', 'Data_10D', 'Data_50D', 'Data_orig'
 args.randomly_drop_n_last_frames=None
 args.drop_n_last_frames = None
@@ -82,7 +82,7 @@ args.one_curve_per_frame=True
 args.add_noise_to_input_data=0 # .1
 
 
-test_version = 2
+test_version = 8
 
 
 # %%
@@ -210,12 +210,12 @@ patch_sampling_cfg = {
     "structure": "grid", # options: random, grid (only used if predicting patches)
     "num_patches_to_hide": (model_cfg["frame_size"]["rows"]//model_cfg["patch_size"][0])*(model_cfg["frame_size"]["cols"]//model_cfg["patch_size"][1]), # = 1
     "n_frames_to_hide": args.downsample_points - args.num_seen_points, # if n_frames_to_hide=1, only the last frame is masked and predicted. If >1, 3 random frames of the sequence are used.
-    "num_in_between_frames": 500, # Number of dummy points that will be added
+    "num_in_between_frames": 10, # Number of dummy points that will be added
     "in_between_frame_init": "interpolation", # options: 'mask' sets the dummy frames to 0.5; 'random' sets the dummy frames to gaussian with mean 0 and std=0.1; "inteporlation" initializes the dummy and masked frames as an inteprolation of the visible frames
     "interpolation_kind" : "linear",
     "batch_size_segments": args.batch_size,# batch_size_segments,
     "prob_replace_masked_token": 1.0,
-    "sampling_type" : 'random', #'random' or 'regular'
+    "sampling_type" : 'uniform', #'random' or 'regular'
     "masking_type" : "random_masking",# "last_n_points" masks the last n points defined by n_frames_to_hide. "equal_spaced" distributes the masked points equally betwen visible ones. "random_masking" randomly masks 
     "mode": "" # In "inference", the frames are chosen manualy 
 } 
@@ -259,6 +259,7 @@ if 'resume_from_checkpoint' in train_cfg:
         print('Loading failed')
 
 model.sobolev_loss_ = loss_func
+model.hparams.patch_sampling_cfg = patch_sampling_cfg
 
 # with open(f"{logger.log_dir}/readme.txt", "w+") as txt:
 #     print(readme, file=txt)
@@ -275,7 +276,8 @@ np.savez(os.path.join(path_to_save_models, 'inference.npz'),
     )
 with open(os.path.join(path_to_save_models, f'inference_sob{train_cfg["factor_sobolev"]}.json'), 'w') as f:
     f.write(json.dumps({
-        'loss': res['loss']
+        'loss': res['loss'],
+        'mse': res['mse']
     }, indent=4))
     f.close()
 

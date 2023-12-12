@@ -623,8 +623,9 @@ class BERT_Model(pl.LightningModule):
         masked_poss = []
         datas = []
         losses = []
+        mses = []
         for batch in tqdm(dataloader):
-            T, y, masked_pos, masked_tokens, data, loss = self.inference_step(batch)
+            T, y, masked_pos, masked_tokens, data, loss, mse = self.inference_step(batch)
             '''
                 T: 516
                 y: 10 x 516 x 100 x 1
@@ -639,12 +640,14 @@ class BERT_Model(pl.LightningModule):
             masked_poss.append(masked_pos.detach().cpu().numpy())
             datas.append(data[..., 0].detach().cpu().numpy())
             losses.append(loss)
+            mses.append(mse)
         return {
             'T': np.concatenate(Ts, axis=0),
             'y': np.concatenate(ys, axis=0),
             'gt_T': np.concatenate(masked_poss, axis=0),
             'gt': np.concatenate(datas, axis=0),
-            'loss': sum(losses) / len(losses)
+            'loss': sum(losses) / len(losses),
+            'mse': sum(mses) / len(mses),
         }
 
     def inference_step(self, batch):
@@ -733,9 +736,9 @@ class BERT_Model(pl.LightningModule):
                                                         y_0=logits_lm_with_dummy.squeeze(-1)[:,ids,:],
                                                         indexes = ids2
                                                         )
+            mse = ((logits_lm_with_dummy[:,ids] - data) ** 2).sum(-1).sum(-1).sum(-1).mean().detach().cpu().item()
         
-        
-        return T, logits_lm_with_dummy, masked_pos, masked_tokens, data, loss_lm.cpu().item()
+        return T, logits_lm_with_dummy, masked_pos, masked_tokens, data, loss_lm.cpu().item(), mse
 
     def configure_optimizers(self):
         optimizer = Adam(self.parameters(),
