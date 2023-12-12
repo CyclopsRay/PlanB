@@ -12,10 +12,10 @@ blur = 0.05
 scaling = 0.3
 # latent_size = 100
 p = 2
-match_method = "Hungarian"
-# match_method = "OT"
-input_path = '/gpfs/data/rsingh47/ylei29/CS2952G/schiebinger2019/large_test/original'
-output_path = '/gpfs/data/rsingh47/ylei29/CS2952G/schiebinger2019/large_test/hungarian-original'
+# match_method = "Hungarian"
+match_method = "OT"
+input_path = '/gpfs/data/rsingh47/ylei29/CS2952G/schiebinger2019/large_test/pca'
+output_path = '/gpfs/data/rsingh47/ylei29/CS2952G/schiebinger2019/large_test/matched-pca'
 file_names = [f for f in os.listdir(input_path) if (f.endswith('.tsv.gz'))]
 
 def generate_cost(X1, X2):
@@ -92,7 +92,7 @@ for i in range(len(mat)-1):
     if match_method == 'OT':
         rc = torch.tensor(rc)
         rc_p = torch.tensor(rc_p)
-        maching = OT(rc, rc_p)
+        matching = OT(rc, rc_p)
         print(f"Now time is {i} and matching is \n {matching}")
         # shuffle the last matrix
         mat[i+1] = rc_p[matching]
