@@ -82,7 +82,7 @@ args.one_curve_per_frame=True
 args.add_noise_to_input_data=0 # .1
 
 
-test_version = 8
+test_version = 3
 
 
 # %%
@@ -270,9 +270,9 @@ print(f"logging to {logger.log_dir}")
 res = model.inference(dataloaders['val'])
 np.savez(os.path.join(path_to_save_models, 'inference.npz'),
     T=res['T'],
-    y=res['y'],
+    y=res['y'] * scaling_factor,
     gt_T=res['gt_T'],
-    gt=res['gt']
+    gt=res['gt'] * scaling_factor
     )
 with open(os.path.join(path_to_save_models, f'inference_sob{train_cfg["factor_sobolev"]}.json'), 'w') as f:
     f.write(json.dumps({
