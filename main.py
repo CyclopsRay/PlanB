@@ -3,6 +3,7 @@ from baseline import AE
 import torch.optim as optim
 import torch
 from torch.utils.data import DataLoader, TensorDataset, random_split
+from sklearn.decomposition import PCA
 from torch import nn
 import numpy as np
 import os
@@ -16,23 +17,47 @@ ttp = 12
 ttp_p = 11
 gene_cap = 2000
 cell_cap = 2000
+latent_size = 100
+count = []
 dense_mat_list, _ = load_data(base_dir, study, ttp, gene_cap, cell_cap)
-latent_size = 128
-print(len(dense_mat_list))
+for i in dense_mat_list:
+    count.append(len(i))
+print(f"Count si {count}")
+mat = np.concatenate(dense_mat_list)
+print("Mat is:")
+print(mat.shape)
+pca = PCA(n_components= latent_size)
+pca.fit(mat)
+transformed = pca.transform(mat)
+print(f"Transformed: {transformed.shape}")
+# print(len(dense_mat_list))
+sum=0
+output = []
+for i in count:
+    adding = transformed[sum:sum+i,:]
+    print(adding.shape)
+    output.append(adding)
+    sum+=i
 
-
-for i in range(len(dense_mat_list)):
-    # Extract the (c,g) matrix for the i-th t
-    matrix = dense_mat_list[i]
-    
-    # Convert the numpy array to a pandas DataFrame
-    df = pd.DataFrame(matrix)
-    
-    # Construct the file name
-    file_name = f'schiebinger2019/raw_data_origin/raw_data/original_{i+1}.tsv.gz'
-    
-    # Save the DataFrame to a compressed TSV file
+for i in range(len(output)):
+    cur = output[i]
+    print(len(cur))
+    df = pd.DataFrame(cur)
+    file_name = 'schiebinger2019/large_test/pca/' + str(i+1) + '.tsv.gz'
     df.to_csv(file_name, sep='\t', index=False, compression='gzip')
+
+# for i in range(len(output)):
+#     # Extract the (c,g) matrix for the i-th t
+#     matrix = dense_mat_list[i]
+    
+#     # Convert the numpy array to a pandas DataFrame
+#     df = pd.DataFrame(matrix)
+    
+#     # Construct the file name
+#     file_name = 'schiebinger2019/raw_data_origin/raw_data/original_' + str(i+1) + '.tsv.gz'
+    
+#     # Save the DataFrame to a compressed TSV file
+#     df.to_csv(file_name, sep='\t', index=False, compression='gzip')
 
 exit()
 

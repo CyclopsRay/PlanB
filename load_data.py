@@ -17,7 +17,7 @@ def load_data(base_dir, study, truncate_time_point = 12, gene_num_cap = 4000, ce
         num_time_pts = len(time_pt_list)
         dense_mat_list = [] # This is a list, each element is a mat. Each mat could have totally different r and c.
         for t in np.arange(len(time_pt_list)):
-            print(t)
+            # print(t)
             time_pt = time_pt_list[t]        
             str_time_pt = str(time_pt).replace('.', '_')
             fname = os.path.join(base_dir, study, 'gene_exp_mat_time_' + \
@@ -27,7 +27,7 @@ def load_data(base_dir, study, truncate_time_point = 12, gene_num_cap = 4000, ce
             sparse_mat = coo_matrix.tocsr(sparse_mat) #easier to index
             dense_mat = np.array(csr_matrix.todense(sparse_mat))
             dense_mat = 2**dense_mat
-            print(t, dense_mat)
+            # print(t, dense_mat)
             dense_mat_list.append(dense_mat)
     elif study.startswith('cao2019'):
         time_pt_list = [9.5, 10.5, 11.5, 12.5, 13.5]
